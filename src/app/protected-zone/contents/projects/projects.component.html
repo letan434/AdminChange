@@ -1,0 +1,178 @@
+<p>
+</p>
+<div class="animated fadeIn">
+    <p-panel #pnl>
+        <p-header>
+            <div class="ui-g-6">
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="CREATE" pButton type="button" label="Thêm"
+                        icon="fa fa-plus" (click)="showAddModal()"></button>
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="DELETE" pButton type="button" label="Xóa"
+                        icon="fa fa-trash" class="ui-button-danger" *ngIf="selectedItems.length > 0"
+                        (click)="deleteItems()"></button>
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="UPDATE" pButton type="button" label="Sửa"
+                        icon="fa fa-edit" class="ui-button-warning" *ngIf="selectedItems.length== 1"
+                        (click)="showEditModal()"></button>
+            </div>
+            <div class="ui-g-6">
+                <input style="width: 100%;" pInputText (keyup.enter)="loadData()" [(ngModel)]="keyword"
+                       placeholder="Nhập từ khóa..." type="text">
+            </div>
+            <div class="ui-g-4">
+                <p-checkbox label="Hiển thị thành viên..." [(ngModel)]="showUserAssign" (click)="togglePanel()" binary="true">
+                </p-checkbox>
+            </div>
+            <div class="ui-g-4">
+                <p-checkbox label="Hiển thị danh sách status" [(ngModel)] = "showStatusAssign" (click)="showStatus()" binary="true">
+                </p-checkbox>
+            </div>
+        </p-header>
+        <p-table #dt [value]="items" selectionMode="multiple" [(selection)]="selectedItems" [metaKeySelection]="true"
+                 [responsive]="true" [scrollable]="true" (onRowSelect)="onRowSelect($event)"
+                 (onRowUnselect)="onRowUnselect($event)">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 35px">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th [pSortableColumn]="'id'">Mã
+                        <p-sortIcon [field]="'id'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'name'">Tên
+                        <p-sortIcon [field]="'name'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'description'"> Mô tả
+                        <p-sortIcon [field]="'description'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'categoryId'">Category
+                        <p-sortIcon [field]="'categoryId'"></p-sortIcon>
+                    </th>
+                </tr>
+
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr [pSelectableRow]="row">
+                    <td style="width: 35px;">
+                        <span class="ui-column-title">Lựa chọn</span>
+                        <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                    </td>
+                    <td>{{row.id.substring(0, 4)}}</td>
+                    <td>{{row.name}}</td>
+                    <td>{{row.description}}</td>
+                    <td>{{row.categoryId}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div style="text-align: left">
+                    Tổng số bản ghi: {{totalRecords | number}}
+                </div>
+            </ng-template>
+        </p-table>
+        <p-footer>
+            <p-paginator [rows]="pageSize" [totalRecords]="totalRecords" (onPageChange)="pageChanged($event)"
+                         [rowsPerPageOptions]="[10,20,50,100]"></p-paginator>
+            <p-blockUI [target]="pnl" [blocked]="blockedPanel">
+                <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                                   strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+            </p-blockUI>
+        </p-footer>
+    </p-panel>
+    <p-panel #pnlUser *ngIf="showUserAssign">
+        <p-header>
+                <div class="pcol-12">
+                    <button appPermission appFunction="CONTENT_PROJECT" appAction="UPDATE" pButton type="button" label="Thêm thành viên"
+                            icon="fa fa-plus" *ngIf="selectedItems !=null" (click)="addUserProject()"></button>
+                    <button appPermission appFunction="CONTENT_PROJECT" appAction="DELETE" pButton type="button" label="Xóa User"
+                            icon="fa fa-remove" class="ui-button-danger" *ngIf="selectedUsersItems.length>0"
+                            (click)="removeUsers()"></button>
+                </div>
+        </p-header>
+        <p-table #dt2 [value]="users" selectionMode="multiple" [metaKeySelection]="true"
+                 [(selection)]="selectedUsersItems" [responsive]="true" [scrollable]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 35px">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th [pSortableColumn]="'id'">Mã user
+                        <p-sortIcon [field]="'id'"></p-sortIcon>
+                    </th >
+                    <th [pSortableColumn]="'username'">Tên đăng nhập
+                        <p-sortIcon [field]="'username'"></p-sortIcon>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr [pSelectableRow]="row">
+                    <td style="width: 35px">
+                        <span class="ui-column-title">Lựa chọn</span>
+                        <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                    </td>
+                    <td>{{row.id.substring(0, 4)}}</td>
+                    <td>{{row.userName}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div style="text-align: left">
+                    Tổng số thành viên: {{totalProjectUserRecords}}
+                </div>
+            </ng-template>
+        </p-table>
+        <p-blockUI [target]="pnlUser" [blocked]="blockedPanelUser">
+            <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                               strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+        </p-blockUI>
+    </p-panel>
+    <p-panel #pnlUser *ngIf="showStatusAssign">
+        <p-header>
+            <div class="pcol-12">
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="UPDATE" pButton type="button" label="Thêm status"
+                        icon="fa fa-plus" *ngIf="selectedItems != null" (click)="showAddStatusProject()"></button>
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="UPDATE" pButton type="button" label="Sửa"
+                        icon="fa fa-edit" class="ui-button-warning" *ngIf="selectedItems.length != null && selectedStatusItems.length > 0"
+                        (click)="showEditStatusProject()"></button>
+                <button appPermission appFunction="CONTENT_PROJECT" appAction="DELETE" pButton type="button" label="Xóa status"
+                        icon="fa fa-remove" class="ui-button-danger" *ngIf="selectedUsersItems.length != null && selectedStatusItems.length > 0"
+                        (click)="removeStatus()"></button>
+            </div>
+        </p-header>
+        <p-table #dt2 [value]="statuses" selectionMode="multiple" [metaKeySelection]="true"
+                 [(selection)]="selectedStatusItems" [responsive]="true" [scrollable]="true">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 35px">
+                        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                    </th>
+                    <th [pSortableColumn]="'id'">Mã Trạng thái
+                        <p-sortIcon [field]="'id'"></p-sortIcon>
+                    </th >
+                    <th [pSortableColumn]="'name'">Tên trạng thái
+                        <p-sortIcon [field]="'name'"></p-sortIcon>
+                    </th>
+                    <th [pSortableColumn]="'description'">Mô tả
+                        <p-sortIcon [field]="'description'"></p-sortIcon>
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr [pSelectableRow]="row">
+                    <td style="width: 35px">
+                        <span class="ui-column-title">Lựa chọn</span>
+                        <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                    </td>
+                    <td>{{row.id.substring(0, 11)}}</td>
+                    <td>{{row.name}}</td>
+                    <td>{{row.description}}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                <div style="text-align: left">
+                    Tổng số trạng thái: {{totalProjectStatusRecords}}
+                </div>
+            </ng-template>
+        </p-table>
+        <p-blockUI [target]="pnlUser" [blocked]="blockedPanelUser">
+            <p-progressSpinner [style]="{width: '100px', height: '100px', position:'absolute',top:'25%',left:'50%'}"
+                               strokeWidth="2" animationDuration=".5s"></p-progressSpinner>
+        </p-blockUI>
+    </p-panel>
+</div>

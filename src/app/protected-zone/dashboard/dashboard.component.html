@@ -1,0 +1,59 @@
+<div [@routerTransition]>
+    <h2 class="text-muted">Dashboard <small>Projects Manager Overview</small></h2>
+
+    <hr />
+    <div class="row">
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [bgClass]="'primary'" [count]="countNewDashboard?.projectCount" [icon]="'fa-support'" [label]="'New Project!'"  [data]="'/contents/projects'"></app-stat>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [bgClass]="'warning'" [count]="countNewDashboard?.issueCount" [icon]="'fa-tasks'" [label]="'New Task!'" [data]="'/contents/issues'"></app-stat>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <app-stat
+                [bgClass]="'success'"
+                [count]="countNewDashboard?.commentCount"
+                [icon]="'fa-comments'"
+                [label]="'New Comments!'"
+                [data]="'/statistics/monthly-newcomments'"
+            ></app-stat>
+        </div>
+        <div class="col-xl-3 col-lg-6">
+            <app-stat [bgClass]="'danger'" [count]="countNewDashboard?.userCount" [icon]="'fa-address-card'" [label]="'New User!'" [data] = "'/systems/users'"></app-stat>
+        </div>
+    </div>
+    <hr />
+    <ngb-alert (closed)="closeAlert(alert)" *ngFor="let alert of alerts" [type]="alert.type">{{
+        alert.message
+    }}</ngb-alert>
+    <hr />
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card card-default">
+                <div class="card-header"><i class="fa fa-clock-o fa-fw"></i> Project chart</div>
+                <!-- /.card-header -->
+                <ng-container *ngFor="let item of dashBoardProject">
+                    <app-timeline [dataProject] = "item"></app-timeline>
+
+                </ng-container>
+
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col-lg-8 -->
+        <div class="col-lg-4">
+            <div class="card card-default mb-3">
+                <div class="card-header"><i class="fa fa-bell fa-fw"></i> Notifications card</div>
+                <!-- /.card-header -->
+                <app-notification></app-notification>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+            <app-chat></app-chat>
+            <!-- /.card .chat-card -->
+        </div>
+        <!-- /.col-lg-4 -->
+    </div>
+</div>
